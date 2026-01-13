@@ -40,6 +40,9 @@ export class LivingOsAmbience extends Ambience {
     
     // If fieldStation is active, recreate it with new growth level
     if (this.activeFieldStationLayer) {
+      // Clean up timeouts
+      this.cleanupLayerTimeouts(this.activeFieldStationLayer);
+      
       // Stop current layer
       const ctx = getAudioContext();
       const now = ctx.currentTime;
@@ -51,12 +54,48 @@ export class LivingOsAmbience extends Ambience {
       // Start new layer with updated growth level
       setTimeout(() => {
         const opts: LivingOsAmbienceOptions = {
-          intensity: 0.3,
+          intensity: 0.18, // Lower default intensity
           growthLevel: this.growthLevel,
           fadeIn: 1,
         };
         this.createFieldStationAmbience(this, opts);
       }, 500);
+    }
+  }
+  
+  /**
+   * Override stop to clean up timeouts
+   */
+  stop(fadeOut: number = 1): void {
+    // Clean up all layer timeouts
+    for (const layer of this.getLayers()) {
+      this.cleanupLayerTimeouts(layer);
+    }
+    
+    // Call parent stop
+    super.stop(fadeOut);
+  }
+  
+  /**
+   * Clean up timeouts for a layer
+   */
+  private cleanupLayerTimeouts(layer: ActiveLayer): void {
+    // Clean up bird timeouts
+    if ((layer as any).birdTimeouts) {
+      (layer as any).birdTimeouts.forEach((id: number) => clearTimeout(id));
+      (layer as any).birdTimeouts = [];
+    }
+    
+    // Clean up rustle timeouts
+    if ((layer as any).rustleTimeouts) {
+      (layer as any).rustleTimeouts.forEach((id: number) => clearTimeout(id));
+      (layer as any).rustleTimeouts = [];
+    }
+    
+    // Clean up organic timeouts
+    if ((layer as any).organicTimeouts) {
+      (layer as any).organicTimeouts.forEach((id: number) => clearTimeout(id));
+      (layer as any).organicTimeouts = [];
     }
   }
   
@@ -113,7 +152,7 @@ export class LivingOsAmbience extends Ambience {
     const layer: ActiveLayer = { name: 'researchLab', oscillators: [], gains: [], intervals: [] };
     
     const growthLevel = opts.growthLevel ?? this.growthLevel;
-    const intensity = opts.intensity || 0.3;
+    const intensity = opts.intensity || 0.18; // Lower default
     const fadeIn = opts.fadeIn || 2;
     const stage = this.getStage(growthLevel);
     
@@ -168,20 +207,23 @@ export class LivingOsAmbience extends Ambience {
   }
   
   /**
-   * Add nature sounds layer (birds, wind)
+   * Add nature sounds layer (birds, wind) - Organic and non-repetitive
    */
   private addNatureLayer(layer: ActiveLayer, ambience: Ambience, stage: number, intensity: number, fadeIn: number): void {
     const ctx = getAudioContext();
     
-    // Wind through leaves
+    // Wind through leaves - Longer buffer for less repetition, with subtle drift
     const windNoise = ctx.createBufferSource();
-    const bufferSize = ctx.sampleRate * 2;
+    const bufferSize = ctx.sampleRate * 45; // 45 second buffer (much longer)
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     
+    // Pink noise with subtle variation over time
     for (let i = 0; i < bufferSize; i++) {
-      // Pink noise approximation for wind
-      data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5);
+      const t = i / bufferSize;
+      // Add subtle drift - wind intensity varies slowly over the buffer
+      const drift = 0.9 + 0.2 * Math.sin(t * Math.PI * 2); // Slow cycle
+      data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5) * drift;
     }
     
     windNoise.buffer = buffer;
@@ -189,7 +231,17 @@ export class LivingOsAmbience extends Ambience {
     
     const windFilter = ctx.createBiquadFilter();
     windFilter.type = 'lowpass';
-    windFilter.frequency.value = stage >= 2 ? 400 : 800; // Darker in advanced stages
+    windFilter.frequency.value = stage >= 2 ? 400 : 800;
+    
+    // Add subtle pitch/volume variation LFO for organic feel
+    const windVariationLfo = ctx.createOscillator();
+    windVariationLfo.type = 'sine';
+    windVariationLfo.frequency.value = 0.02; // Very slow variation (50 second cycle)
+    
+    const windVariationGain = ctx.createGain();
+    windVariationGain.gain.value = intensity * 0.03; // Subtle variation
+    
+    windVariationLfo.connect(windVariationGain);
     
     // Distortion in advanced stages
     if (stage >= 2) {
@@ -205,28 +257,74 @@ export class LivingOsAmbience extends Ambience {
     
     const windGain = ctx.createGain();
     windGain.gain.value = 0;
-    windGain.gain.linearRampToValueAtTime(intensity * 0.15, ctx.currentTime + fadeIn);
+    windGain.gain.linearRampToValueAtTime(intensity * 0.12, ctx.currentTime + fadeIn);
+    
+    // Connect variation LFO to gain
+    windVariationGain.connect(windGain.gain);
     
     windFilter.connect(windGain);
     windGain.connect(ambience.getMasterGain());
     
     windNoise.start();
+    windVariationLfo.start();
     layer.noiseSource = windNoise;
+    layer.oscillators.push(windVariationLfo);
     layer.gains.push(windGain);
     
-    // Bird chirps (periodic)
-    const birdInterval = window.setInterval(() => {
+    // Bird chirps - Multiple independent "voices" with exponential distribution timing
+    // Create 3-4 independent bird patterns that don't sync
+    const birdVoiceCount = stage >= 2 ? 2 : 4;
+    for (let voiceIndex = 0; voiceIndex < birdVoiceCount; voiceIndex++) {
+      // Each voice starts at a random offset and has its own timing
+      const initialDelay = Math.random() * 5000; // Random start (0-5 seconds)
+      
+      setTimeout(() => {
+        this.scheduleNextBirdChirp(ambience, layer, stage, intensity, voiceIndex);
+      }, initialDelay);
+    }
+  }
+  
+  /**
+   * Schedule next bird chirp using exponential distribution for organic timing
+   */
+  private scheduleNextBirdChirp(ambience: Ambience, layer: ActiveLayer, stage: number, intensity: number, voiceIndex: number): void {
+    if (!ambience.getIsPlaying()) return;
+    
+    // Exponential distribution for natural timing
+    // Average interval: 8-15 seconds (varies by stage and voice)
+    const baseInterval = stage >= 2 ? 12000 : 8000;
+    const voiceVariation = 0.7 + (voiceIndex * 0.2); // Each voice has different timing
+    const averageInterval = baseInterval * voiceVariation;
+    
+    // Exponential distribution: -ln(random) * average
+    const nextInterval = -Math.log(Math.random()) * averageInterval;
+    
+    // Clamp to reasonable range (2-60 seconds)
+    const clampedInterval = Math.max(2000, Math.min(60000, nextInterval));
+    
+    // Add occasional longer silences (birds don't chirp constantly)
+    // 10% chance of extra long pause (30-90 seconds)
+    const hasLongPause = Math.random() < 0.1;
+    const finalInterval = hasLongPause 
+      ? clampedInterval + (30000 + Math.random() * 60000)
+      : clampedInterval;
+    
+    const timeoutId = window.setTimeout(() => {
       if (!ambience.getIsPlaying()) return;
       
-      const chirpCount = stage >= 2 ? 1 : 2; // Fewer chirps in advanced stages
-      for (let i = 0; i < chirpCount; i++) {
-        setTimeout(() => {
-          this.playBirdChirp(ambience, stage, intensity * 0.1);
-        }, i * 200);
-      }
-    }, stage >= 2 ? 8000 : 4000); // Less frequent in advanced stages
+      // Vary chirp characteristics
+      const chirpVolume = intensity * 0.08 * (0.7 + Math.random() * 0.3); // 70-100% variation
+      this.playBirdChirp(ambience, stage, chirpVolume);
+      
+      // Schedule next chirp
+      this.scheduleNextBirdChirp(ambience, layer, stage, intensity, voiceIndex);
+    }, finalInterval);
     
-    layer.intervals.push(birdInterval);
+    // Store timeout ID for cleanup (we'll track these in a new array)
+    if (!(layer as any).birdTimeouts) {
+      (layer as any).birdTimeouts = [];
+    }
+    (layer as any).birdTimeouts.push(timeoutId);
   }
   
   /**
@@ -267,15 +365,8 @@ export class LivingOsAmbience extends Ambience {
     layer.oscillators.push(humOsc);
     layer.gains.push(humGain);
     
-    // Paper rustling (occasional)
-    const rustleInterval = window.setInterval(() => {
-      if (!ambience.getIsPlaying()) return;
-      if (Math.random() < 0.3) {
-        this.playRustle(ambience, stage, intensity * 0.08);
-      }
-    }, 6000);
-    
-    layer.intervals.push(rustleInterval);
+    // Paper rustling (occasional) - Organic timing
+    this.scheduleNextRustle(ambience, layer, stage, intensity);
   }
   
   /**
@@ -284,15 +375,8 @@ export class LivingOsAmbience extends Ambience {
   private addOrganicLayer(layer: ActiveLayer, ambience: Ambience, stage: number, intensity: number, fadeIn: number): void {
     const ctx = getAudioContext();
     
-    // Subtle root/plant movement sounds
-    const organicInterval = window.setInterval(() => {
-      if (!ambience.getIsPlaying()) return;
-      if (Math.random() < (stage === 3 ? 0.5 : 0.3)) {
-        this.playOrganicGrowth(ambience, stage, intensity * 0.1);
-      }
-    }, stage === 3 ? 3000 : 5000);
-    
-    layer.intervals.push(organicInterval);
+    // Subtle root/plant movement sounds - Organic timing
+    this.scheduleNextOrganicGrowth(ambience, layer, stage, intensity);
     
     // Low organic drone in final stage
     if (stage === 3) {
@@ -314,38 +398,114 @@ export class LivingOsAmbience extends Ambience {
   }
   
   /**
-   * Play bird chirp (varies by stage)
+   * Play bird chirp (varies by stage) - More organic with micro-variations
    */
   private playBirdChirp(ambience: Ambience, stage: number, volume: number): void {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
     
-    const baseFreq = 800 + Math.random() * 400;
-    const freq = stage >= 2 ? baseFreq * (stage === 3 ? 0.5 : 0.7) : baseFreq; // Lower/distorted in advanced stages
+    // Base frequency with more variation
+    const baseFreq = 700 + Math.random() * 500; // Wider range: 700-1200 Hz
+    const freq = stage >= 2 ? baseFreq * (stage === 3 ? 0.5 : 0.7) : baseFreq;
+    
+    // Add subtle pitch variation (±5%)
+    const pitchVariation = freq * (1 + (Math.random() - 0.5) * 0.1);
     
     const osc = ctx.createOscillator();
     osc.type = 'sine';
-    osc.frequency.value = freq;
+    osc.frequency.value = pitchVariation;
     
-    // Reverse playback in advanced stages
+    // Vary chirp length (0.15-0.25 seconds)
+    const chirpLength = 0.15 + Math.random() * 0.1;
+    
+    // More organic frequency curve
     if (stage === 3) {
-      osc.frequency.setValueAtTime(freq, now);
-      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.1);
+      // Eerie: reversed/distorted
+      osc.frequency.setValueAtTime(pitchVariation, now);
+      osc.frequency.exponentialRampToValueAtTime(pitchVariation * 1.5, now + chirpLength * 0.5);
     } else {
-      osc.frequency.setValueAtTime(freq * 1.2, now);
-      osc.frequency.exponentialRampToValueAtTime(freq, now + 0.1);
+      // Normal: natural chirp curve with variation
+      const startFreq = pitchVariation * (1.15 + Math.random() * 0.1); // Start slightly higher
+      const endFreq = pitchVariation * (0.95 + Math.random() * 0.1); // End slightly lower
+      osc.frequency.setValueAtTime(startFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, now + chirpLength);
     }
+    
+    // Volume variation (80-100% of base volume)
+    const volumeVariation = volume * (0.8 + Math.random() * 0.2);
     
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(volume, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    gain.gain.linearRampToValueAtTime(volumeVariation, now + chirpLength * 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + chirpLength);
     
     osc.connect(gain);
     gain.connect(ambience.getMasterGain());
     
     osc.start(now);
-    osc.stop(now + 0.2);
+    osc.stop(now + chirpLength);
+  }
+  
+  /**
+   * Schedule next rustle sound with organic timing
+   */
+  private scheduleNextRustle(ambience: Ambience, layer: ActiveLayer, stage: number, intensity: number): void {
+    if (!ambience.getIsPlaying()) return;
+    
+    // Exponential distribution: average 15-25 seconds
+    const averageInterval = 15000 + Math.random() * 10000;
+    const nextInterval = -Math.log(Math.random()) * averageInterval;
+    const clampedInterval = Math.max(5000, Math.min(45000, nextInterval));
+    
+    const timeoutId = window.setTimeout(() => {
+      if (!ambience.getIsPlaying()) return;
+      
+      // 30% chance of rustle happening
+      if (Math.random() < 0.3) {
+        const rustleVolume = intensity * 0.08 * (0.8 + Math.random() * 0.2);
+        this.playRustle(ambience, stage, rustleVolume);
+      }
+      
+      // Schedule next check
+      this.scheduleNextRustle(ambience, layer, stage, intensity);
+    }, clampedInterval);
+    
+    if (!(layer as any).rustleTimeouts) {
+      (layer as any).rustleTimeouts = [];
+    }
+    (layer as any).rustleTimeouts.push(timeoutId);
+  }
+  
+  /**
+   * Schedule next organic growth sound with organic timing
+   */
+  private scheduleNextOrganicGrowth(ambience: Ambience, layer: ActiveLayer, stage: number, intensity: number): void {
+    if (!ambience.getIsPlaying()) return;
+    
+    // Exponential distribution: average 8-15 seconds (varies by stage)
+    const baseInterval = stage === 3 ? 8000 : 12000;
+    const averageInterval = baseInterval + Math.random() * 7000;
+    const nextInterval = -Math.log(Math.random()) * averageInterval;
+    const clampedInterval = Math.max(3000, Math.min(30000, nextInterval));
+    
+    const timeoutId = window.setTimeout(() => {
+      if (!ambience.getIsPlaying()) return;
+      
+      // Probability varies by stage
+      const probability = stage === 3 ? 0.5 : 0.3;
+      if (Math.random() < probability) {
+        const growthVolume = intensity * 0.1 * (0.7 + Math.random() * 0.3);
+        this.playOrganicGrowth(ambience, stage, growthVolume);
+      }
+      
+      // Schedule next check
+      this.scheduleNextOrganicGrowth(ambience, layer, stage, intensity);
+    }, clampedInterval);
+    
+    if (!(layer as any).organicTimeouts) {
+      (layer as any).organicTimeouts = [];
+    }
+    (layer as any).organicTimeouts.push(timeoutId);
   }
   
   /**

@@ -1,6 +1,6 @@
 {
   "name": "music-playground",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A Web Audio API library for generating atmospheric soundscapes programmatically. Perfect for adding ambient audio to themed web projects, games, or interactive experiences.",
   "keywords": [
     "web-audio",
