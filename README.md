@@ -2,10 +2,31 @@
 
 A Web Audio API library for generating atmospheric soundscapes programmatically. Perfect for adding ambient audio to themed web projects, games, or interactive experiences.
 
+**Built-in Theme**: Deep-sea marine biology (`themes.deepSea`)  
+**Extensible**: Register custom themes for jungle, space, or any aesthetic.
+
+## Architecture: Core + Themes
+
+The library is organized into **core API** (theme-agnostic) and **themes** (presets):
+
+```typescript
+// New API (recommended) - explicit theme
+import { themes } from 'music-playground';
+const ambience = new themes.deepSea.Ambience();
+await ambience.play('deepSea', { intensity: 0.7, depth: 3000 });
+
+// Old API (backward compatible)
+import { Ambience } from 'music-playground';
+const ambience = new Ambience();
+await ambience.play('deepSea', { intensity: 0.7, depth: 3000 });
+```
+
+See [THEME_ARCHITECTURE.md](./THEME_ARCHITECTURE.md) for details.
+
 ## Quick Start
 
 ```typescript
-import { Ambience, SoundEffect } from './src/index';
+import { Ambience, SoundEffect } from 'music-playground';
 
 // Create ambience instance
 const ambience = new Ambience();
@@ -26,6 +47,49 @@ await ambience.addLayer('sonar', { interval: 8 });
 
 // Stop all ambience
 ambience.stop();
+```
+
+## Themes
+
+### Using Built-in Themes
+
+```typescript
+import { themes } from 'music-playground';
+
+// Deep-sea theme (built-in)
+const ambience = new themes.deepSea.Ambience();
+await ambience.play('deepSea', { intensity: 0.5 });
+await ambience.addLayer('rov', { intensity: 0.1 });
+
+const sfx = new themes.deepSea.SoundEffect();
+sfx.play('creature');
+```
+
+### Registering Custom Themes
+
+```typescript
+import { registerTheme } from 'music-playground';
+
+registerTheme('jungle', {
+  Ambience: class JungleAmbience extends Ambience {
+    constructor() {
+      super();
+      this.registerPreset('rain', createRainAmbience);
+      this.registerPreset('wind', createWindAmbience);
+    }
+  },
+  SoundEffect: class JungleSoundEffect extends SoundEffect {
+    constructor() {
+      super();
+      this.registerSound('bird', playBirdCall);
+      this.registerSound('insect', playInsectChirp);
+    }
+  },
+});
+
+// Now available
+const ambience = new themes.jungle.Ambience();
+await ambience.play('rain', { intensity: 0.6 });
 ```
 
 ## Available Ambience Presets
@@ -170,10 +234,16 @@ Open http://localhost:5173 to test all the sounds.
 ```
 music-playground/
   src/
-    index.ts              # Main exports
-    ambience/
-      ambience.ts         # Ambient soundscape generator
-      sound-effects.ts    # One-shot sound effects
+    index.ts              # Main exports (core + themes)
+    core/
+      ambience.ts         # Core Ambience class (theme-agnostic)
+      sound-effect.ts     # Core SoundEffect class (theme-agnostic)
+    themes/
+      index.ts            # Theme registration system
+      deepSea/
+        ambience.ts       # Deep-sea ambience presets
+        sound-effects.ts  # Deep-sea sound effects
+        index.ts          # Deep-sea theme exports
     effects/
       reverb.ts           # Reverb effect
       delay.ts            # Delay effect
