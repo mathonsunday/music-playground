@@ -23,6 +23,46 @@ await ambience.play('deepSea', { intensity: 0.7, depth: 3000 });
 
 See [THEME_ARCHITECTURE.md](./THEME_ARCHITECTURE.md) for details.
 
+## Installation & Usage
+
+### ES Modules (Recommended for Modern Projects)
+
+```bash
+npm install music-playground
+```
+
+```typescript
+import { themes } from 'music-playground';
+const ambience = new themes.deepSea.Ambience();
+```
+
+### Vanilla JavaScript (UMD/IIFE)
+
+Works with simple `<script>` tags - no build step required!
+
+**Via CDN:**
+```html
+<script src="https://unpkg.com/music-playground@2.1.0/dist/music-playground.umd.js"></script>
+<script>
+  const ambience = new MusicPlayground.themes.deepSea.Ambience();
+  await ambience.play('deepSea', { intensity: 0.5 });
+</script>
+```
+
+**Local file:**
+```html
+<script src="./dist/music-playground.umd.js"></script>
+<script>
+  const ambience = new MusicPlayground.themes.livingOs.Ambience();
+  await ambience.play('fieldStation', { growthLevel: 0 });
+</script>
+```
+
+**Available formats:**
+- `music-playground.esm.js` - ES Module (for bundlers)
+- `music-playground.umd.js` - UMD (works everywhere)
+- `music-playground.iife.js` - IIFE (browser-only, simpler)
+
 ## Quick Start
 
 ```typescript

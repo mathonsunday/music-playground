@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Playground UMD Test</title>
+</head>
+<body>
+  <h1>Music Playground UMD Test</h1>
+  <button id="test-deepsea">Test Deep Sea Ambience</button>
+  <button id="test-livingos">Test Living OS Ambience</button>
+  <button id="stop">Stop All</button>
+  
+  <script src="./dist/music-playground.umd.js"></script>
+  <script>
+    console.log('MusicPlayground:', window.MusicPlayground);
+    
+    let ambience = null;
+    
+    document.getElementById('test-deepsea').addEventListener('click', async () => {
+      if (ambience) ambience.stop();
+      ambience = new window.MusicPlayground.themes.deepSea.Ambience();
+      await ambience.play('deepSea', { intensity: 0.5 });
+      console.log('Playing deep sea ambience');
+    });
+    
+    document.getElementById('test-livingos').addEventListener('click', async () => {
+      if (ambience) ambience.stop();
+      ambience = new window.MusicPlayground.themes.livingOs.Ambience();
+      await ambience.play('fieldStation', { growthLevel: 0, intensity: 0.3 });
+      console.log('Playing living OS ambience');
+    });
+    
+    document.getElementById('stop').addEventListener('click', () => {
+      if (ambience) {
+        ambience.stop();
+        ambience = null;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,8 +1,24 @@
 {
   "name": "music-playground",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
+  "main": "dist/music-playground.umd.js",
+  "module": "dist/music-playground.esm.js",
+  "unpkg": "dist/music-playground.umd.js",
+  "jsdelivr": "dist/music-playground.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/music-playground.esm.js",
+      "require": "./dist/music-playground.umd.js",
+      "default": "./dist/music-playground.umd.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

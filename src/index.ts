@@ -69,3 +69,13 @@ export {
 // Export with old names for backward compatibility
 export { DeepSeaAmbience as Ambience, DeepSeaSoundEffect as SoundEffect } from './themes/deepSea/index.js';
 export type { DeepSeaPreset as AmbiencePreset, DeepSeaSoundEffectType as SoundEffectType } from './themes/deepSea/index.js';
+
+// Export Living OS theme classes
+export {
+  LivingOsAmbience,
+  LivingOsSoundEffect,
+  type LivingOsPreset,
+  type LivingOsAmbienceOptions,
+  type LivingOsSoundEffectType,
+  type LivingOsSoundEffectOptions,
+} from './themes/livingOs/index.js';
