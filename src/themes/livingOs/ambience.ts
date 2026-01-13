@@ -212,22 +212,49 @@ export class LivingOsAmbience extends Ambience {
   private addNatureLayer(layer: ActiveLayer, ambience: Ambience, stage: number, intensity: number, fadeIn: number): void {
     const ctx = getAudioContext();
     
-    // Wind through leaves - Longer buffer for less repetition, with subtle drift
-    const windNoise = ctx.createBufferSource();
-    const bufferSize = ctx.sampleRate * 45; // 45 second buffer (much longer)
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
+    // Wind through leaves - Use smaller buffer (20 seconds) with looping and LFO variation
+    // Browser limit is ~30 seconds, so 20 seconds is safe
+    const bufferDuration = 20; // seconds
+    let buffer: AudioBuffer;
+    let windNoise: AudioBufferSourceNode;
     
-    // Pink noise with subtle variation over time
-    for (let i = 0; i < bufferSize; i++) {
-      const t = i / bufferSize;
-      // Add subtle drift - wind intensity varies slowly over the buffer
-      const drift = 0.9 + 0.2 * Math.sin(t * Math.PI * 2); // Slow cycle
-      data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5) * drift;
+    try {
+      const bufferSize = ctx.sampleRate * bufferDuration;
+      buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      
+      // Pink noise with subtle variation over time
+      for (let i = 0; i < bufferSize; i++) {
+        const t = i / bufferSize;
+        // Add subtle drift - wind intensity varies slowly over the buffer
+        const drift = 0.9 + 0.2 * Math.sin(t * Math.PI * 2); // Slow cycle
+        data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5) * drift;
+      }
+      
+      windNoise = ctx.createBufferSource();
+      windNoise.buffer = buffer;
+      windNoise.loop = true;
+    } catch (error) {
+      // Fallback: Use even smaller buffer (10 seconds) if 20 seconds fails
+      console.warn('Failed to create 20s wind buffer, using 10s fallback:', error);
+      try {
+        const fallbackSize = ctx.sampleRate * 10;
+        buffer = ctx.createBuffer(1, fallbackSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        for (let i = 0; i < fallbackSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5);
+        }
+        
+        windNoise = ctx.createBufferSource();
+        windNoise.buffer = buffer;
+        windNoise.loop = true;
+      } catch (fallbackError) {
+        console.error('Failed to create wind buffer, disabling wind sound:', fallbackError);
+        // Continue without wind sound - non-critical
+        return;
+      }
     }
-    
-    windNoise.buffer = buffer;
-    windNoise.loop = true;
     
     const windFilter = ctx.createBiquadFilter();
     windFilter.type = 'lowpass';
