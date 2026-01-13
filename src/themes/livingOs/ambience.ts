@@ -298,6 +298,10 @@ export class LivingOsAmbience extends Ambience {
     layer.oscillators.push(windVariationLfo);
     layer.gains.push(windGain);
     
+    // Note: The LFO variation (50-second cycle) combined with the 20-second loop
+    // creates a non-repetitive feel - the LFO phase shifts relative to the buffer loop,
+    // so even though the buffer repeats, the overall sound evolves over time.
+    
     // Bird chirps - Multiple independent "voices" with exponential distribution timing
     // Create 3-4 independent bird patterns that don't sync
     const birdVoiceCount = stage >= 2 ? 2 : 4;
