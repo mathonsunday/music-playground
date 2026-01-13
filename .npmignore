@@ -1,0 +1,39 @@
+# Development files
+node_modules/
+.vscode/
+.idea/
+*.log
+*.local
+
+# Build artifacts (keep dist/ for npm)
+dist-ssr/
+
+# Test files
+test-umd.html
+index.html
+
+# Source maps (optional - can include if desired)
+# *.map
+
+# Git files
+.git/
+.gitignore
+
+# Config files (keep tsconfig.json, vite.config.ts for reference)
+# But exclude if not needed by users
+# vite.config.ts
+# tsconfig.json
+
+# Public assets (not needed in npm package)
+public/
+
+# Lock files (npm will generate its own)
+package-lock.json
+
+# OS files
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

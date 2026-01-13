@@ -1,7 +1,22 @@
 {
   "name": "music-playground",
-  "private": true,
   "version": "2.2.0",
+  "description": "A Web Audio API library for generating atmospheric soundscapes programmatically. Perfect for adding ambient audio to themed web projects, games, or interactive experiences.",
+  "keywords": [
+    "web-audio",
+    "ambient",
+    "soundscape",
+    "procedural-audio",
+    "themes",
+    "audio-synthesis",
+    "interactive-audio"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathonsunday/music-playground.git"
+  },
   "type": "module",
   "main": "dist/music-playground.umd.js",
   "module": "dist/music-playground.esm.js",
