@@ -247,7 +247,7 @@ function createHydrophoneAmbience(ambience: Ambience, opts: AmbienceOptions): vo
   const layer: ActiveLayer = { name: 'hydrophone', oscillators: [], gains: [], intervals: [] };
   
   // Filtered noise for static
-  ambience.addFilteredNoise(layer, (opts.intensity || 0.5) * 0.15, 200, 2000, opts.fadeIn || 2);
+  (ambience as any).addFilteredNoise(layer, (opts.intensity || 0.5) * 0.15, 200, 2000, opts.fadeIn || 2);
   
   // Occasional crackles
   const crackleInterval = window.setInterval(() => {
@@ -356,7 +356,7 @@ function createSurfaceAmbience(ambience: Ambience, opts: AmbienceOptions): void 
   const layer: ActiveLayer = { name: 'surface', oscillators: [], gains: [], intervals: [] };
   
   // Wind/wave noise
-  ambience.addFilteredNoise(layer, (opts.intensity || 0.5) * 0.2, 100, 800, opts.fadeIn || 2);
+  (ambience as any).addFilteredNoise(layer, (opts.intensity || 0.5) * 0.2, 100, 800, opts.fadeIn || 2);
   
   // Gentle wave rhythm
   const waveOsc = ctx.createOscillator();

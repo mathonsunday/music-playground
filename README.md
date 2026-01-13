@@ -63,6 +63,21 @@ await ambience.addLayer('rov', { intensity: 0.1 });
 
 const sfx = new themes.deepSea.SoundEffect();
 sfx.play('creature');
+
+// Living OS theme (built-in) - Plant biology research OS
+const livingOsAmbience = new themes.livingOs.Ambience();
+await livingOsAmbience.play('fieldStation', { 
+  growthLevel: 0,  // 0-100, controls progression from normal to eerie
+  intensity: 0.3 
+});
+
+// Update growth level as the OS becomes more alive
+livingOsAmbience.updateGrowthLevel(45); // Now sounds slightly off
+
+const livingOsSfx = new themes.livingOs.SoundEffect();
+livingOsSfx.setGrowthLevel(30);
+livingOsSfx.play('fileConsume'); // Organic file consumption sound
+livingOsSfx.play('systemNotification', { growthLevel: 30 });
 ```
 
 ### Registering Custom Themes

@@ -49,8 +49,9 @@ export {
   type Theme,
 } from './themes/index.js';
 
-// Import deep-sea theme to auto-register it
+// Import themes to auto-register them
 import './themes/deepSea/index.js';
+import './themes/livingOs/index.js';
 
 // ============================================
 // BACKWARD COMPATIBILITY
