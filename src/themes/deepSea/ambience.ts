@@ -110,10 +110,11 @@ function createDeepSeaAmbience(ambience: Ambience, opts: AmbienceOptions): void 
   ambience.addFilteredNoise(layer, (opts.intensity || 0.5) * 0.1, 100, 400, opts.fadeIn || 2);
   
   // Mystery elements - occasional low tones
-  if ((opts.mystery || 0.3) > 0.2) {
+  const mysteryValue = opts.mystery !== undefined ? opts.mystery : 0.3;
+  if (mysteryValue > 0.2) {
     const mysteryInterval = window.setInterval(() => {
       if (!ambience.getIsPlaying()) return;
-      if (Math.random() < (opts.mystery || 0.3)) {
+      if (Math.random() < mysteryValue) {
         playMysteryTone(ambience, (opts.intensity || 0.5) * 0.15);
       }
     }, 8000);
