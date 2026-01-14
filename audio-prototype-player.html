@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living OS Audio Prototypes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+            color: #e8f5e9;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a5d6a7;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(165, 214, 167, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            font-weight: 600;
+            color: #a5d6a7;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .growth-value {
+            background: rgba(165, 214, 167, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            min-width: 80px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .prototypes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .prototype {
+            background: rgba(10, 40, 20, 0.6);
+            border: 2px solid rgba(165, 214, 167, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .prototype:hover {
+            border-color: rgba(165, 214, 167, 0.6);
+            background: rgba(10, 40, 20, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .prototype.active {
+            border-color: #4caf50;
+            background: rgba(20, 60, 30, 0.9);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .prototype h3 {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+            color: #81c784;
+        }
+
+        .prototype p {
+            font-size: 0.9em;
+            color: #c8e6c9;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.playing {
+            background: #ff6b6b;
+        }
+
+        button.playing:hover {
+            background: #ff5252;
+        }
+
+        .info {
+            background: rgba(165, 214, 167, 0.1);
+            border-left: 4px solid #81c784;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info h4 {
+            color: #81c784;
+            margin-bottom: 8px;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            min-height: 30px;
+        }
+
+        .status.playing {
+            color: #81c784;
+        }
+
+        .status.error {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 Living OS Audio Prototypes</h1>
+        <p class="subtitle">Beautiful nature soundscapes for growth stage 0</p>
+
+        <div class="control-panel">
+            <div class="status" id="status">Ready to play</div>
+        </div>
+
+        <div class="prototypes">
+            <div class="prototype" data-prototype="birds">
+                <h3>🐦 Bird Chirps</h3>
+                <p>Warm, scattered bird chirps. Multiple voices at different intervals.</p>
+                <button>Play Birds</button>
+            </div>
+
+            <div class="prototype" data-prototype="crystalline">
+                <h3>✨ Crystalline Resonance</h3>
+                <p>Beautiful, otherworldly harmonic series. Organic but clearly synthetic. Drawing you in.</p>
+                <button>Play Crystalline</button>
+            </div>
+
+            <div class="prototype" data-prototype="breathing">
+                <h3>💫 Breathing Pulses</h3>
+                <p>Warm, living pulses with gentle harmonic movement. Like something is alive and inviting you.</p>
+                <button>Play Breathing</button>
+            </div>
+
+            <div class="prototype" data-prototype="luminous">
+                <h3>🌟 Luminous Wash</h3>
+                <p>Ethereal, shimmering frequencies that feel welcoming but slightly uncanny.</p>
+                <button>Play Luminous</button>
+            </div>
+
+            <div class="prototype" data-prototype="pulsing-waves">
+                <h3>〰️ Pulsing Waves</h3>
+                <p>Like discovering a cool synth patch. Warm, rounded waves that pulse and breathe together.</p>
+                <button>Play Pulsing Waves</button>
+            </div>
+
+            <div class="prototype" data-prototype="morphing-hum">
+                <h3>∿ Morphing Hum</h3>
+                <p>Hypnotic and organic. Frequencies that shift and dance. Just... a nice sound to sit with.</p>
+                <button>Play Morphing Hum</button>
+            </div>
+
+        </div>
+
+        <div class="info">
+            <h4>About these prototypes:</h4>
+            <p>These audio prototypes are generated entirely in code using the Web Audio API, similar to the approach used in the Narrative OS project. No pre-recorded samples—all sounds are synthesized in real-time.</p>
+            <p>Click any prototype button to play, and switch between them anytime or stop with the same button.</p>
+
+            <h4 style="margin-top: 20px;">Web Audio API Sound Design Capabilities:</h4>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li><strong>Flowing Water / Streams</strong> ✓ Works great - Use bandpass filtered noise with organic wave modulation</li>
+                <li><strong>Wind & Rustling Leaves</strong> ✓ Works great - Pink noise with high-pass filtering and LFO variation</li>
+                <li><strong>Bird Chirps</strong> ✓ Works great - Sine oscillators with frequency envelope sweeps</li>
+                <li><strong>Cricket/Insect Sounds</strong> ✓ Works well - Frequency modulation around 4-5kHz with amplitude modulation</li>
+                <li><strong>Bee Buzz</strong> ✓ Possible - High frequency oscillator (600-900Hz) with fast amplitude modulation (150-200Hz)</li>
+                <li><strong>Deep Drones & Pads</strong> ✓ Works very well - Sine oscillators with slow LFO modulation</li>
+                <li><strong>Organic Growth Sounds</strong> ✓ Works well - Frequency sweeps (80-200Hz) with gentle amplitude envelopes</li>
+                <li><strong>Detailed Crackling/Fire</strong> ⚠️ Challenging - Can create but tends to sound synthetic without noise shaping</li>
+                <li><strong>Realistic Rain</strong> ⚠️ Challenging - White noise works but lacks the character of real rain impacts</li>
+                <li><strong>Footsteps/Impacts</strong> ⚠️ Challenging - Difficult to make convincing without impact envelopes</li>
+            </ul>
+
+            <p style="margin-top: 16px; font-size: 0.85em; color: #a5d6a7;">The Web Audio API is excellent for sustained tones, frequency sweeps, filtered noise textures, and modulation effects. Synthetic sounds work best when they're ambient or "alive" rather than trying to replicate specific realistic impacts.</p>
+        </div>
+    </div>
+
+    <script>
+        class AudioContext {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+            }
+
+            getContext() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return this.ctx;
+            }
+
+            getMasterGain() {
+                if (!this.masterGain) {
+                    const ctx = this.getContext();
+                    this.masterGain = ctx.createGain();
+                    this.masterGain.connect(ctx.destination);
+                    this.masterGain.gain.value = 0.5; // Default volume
+                }
+                return this.masterGain;
+            }
+
+            resume() {
+                const ctx = this.getContext();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+            }
+        }
+
+        const audioContextManager = new AudioContext();
+
+        class AudioPrototype {
+            constructor(name, type) {
+                this.name = name;
+                this.type = type;
+                this.isPlaying = false;
+                this.growthLevel = 0;
+                this.oscillators = [];
+                this.gains = [];
+                this.bufferSources = [];
+                this.timeouts = [];
+            }
+
+            async play(growthLevel = 0) {
+                audioContextManager.resume();
+                if (this.isPlaying) {
+                    this.stop();
+                    return;
+                }
+
+                this.growthLevel = growthLevel;
+                this.isPlaying = true;
+                this.updateStatus(`Playing: ${this.name}`);
+
+                try {
+                    if (this.type === 'birds') {
+                        this.createBirdsPrototype();
+                    } else if (this.type === 'crystalline') {
+                        this.createCrystallinePrototype();
+                    } else if (this.type === 'breathing') {
+                        this.createBreathingPrototype();
+                    } else if (this.type === 'luminous') {
+                        this.createLuminousPrototype();
+                    } else if (this.type === 'pulsing-waves') {
+                        this.createPulsingWavesPrototype();
+                    } else if (this.type === 'morphing-hum') {
+                        this.createMorphingHumPrototype();
+                    }
+                } catch (error) {
+                    this.updateStatus(`Error: ${error.message}`, 'error');
+                    this.isPlaying = false;
+                }
+            }
+
+            stop() {
+                this.isPlaying = false;
+                this.updateStatus('Stopped');
+
+                // Stop all oscillators
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                for (const osc of this.oscillators) {
+                    try {
+                        osc.stop(now + 0.1);
+                    } catch (e) {}
+                }
+
+                // Stop all buffer sources
+                for (const src of this.bufferSources) {
+                    try {
+                        src.stop(now + 0.1);
+                    } catch (e) {}
+                }
+
+                // Clear timeouts
+                for (const timeout of this.timeouts) {
+                    clearTimeout(timeout);
+                }
+
+                this.oscillators = [];
+                this.gains = [];
+                this.bufferSources = [];
+                this.timeouts = [];
+            }
+
+            updateGrowthLevel(level) {
+                this.growthLevel = Math.max(0, Math.min(100, level));
+            }
+
+            getStage(growthLevel) {
+                if (growthLevel < 20) return 0; // Normal
+                if (growthLevel < 50) return 1; // Slightly off
+                if (growthLevel < 80) return 2; // Unsettling
+                return 3; // Eerie
+            }
+
+            updateStatus(message, type = 'playing') {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = message;
+                statusEl.className = `status ${type}`;
+            }
+
+            // ===== INDIVIDUAL SOUND PROTOTYPES =====
+            createWaterPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addStreamingWater(masterGain, 0.3, 0.4);
+            }
+
+            createLeavesPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addLeafRustle(masterGain, 0.3, 0.5);
+            }
+
+            createBirdsPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addBirdChirps(masterGain, 0.3, 6);
+            }
+
+            createCrystallinePrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addCrystallineResonance(masterGain, 0.35);
+            }
+
+            createBreathingPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addBreathingPulses(masterGain, 0.3);
+            }
+
+            createLuminousPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addLuminousWash(masterGain, 0.32);
+            }
+
+            createPulsingWavesPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addPulsingWaves(masterGain, 0.28);
+            }
+
+            createMorphingHumPrototype() {
+                const masterGain = audioContextManager.getMasterGain();
+                this.addMorphingHum(masterGain, 0.25);
+            }
+
+            // ===== HELPER METHODS =====
+
+            addWindWithVariation(masterGain, intensity, baseVolume, frequency) {
+                const ctx = audioContextManager.getContext();
+
+                try {
+                    const bufferSize = ctx.sampleRate * 15; // 15 second buffer
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    // Pink noise with organic drift
+                    for (let i = 0; i < bufferSize; i++) {
+                        const t = i / bufferSize;
+                        const drift = 0.9 + 0.2 * Math.sin(t * Math.PI * 2);
+                        data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5) * drift;
+                    }
+
+                    const windSource = ctx.createBufferSource();
+                    windSource.buffer = buffer;
+                    windSource.loop = true;
+                    this.bufferSources.push(windSource);
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = frequency;
+
+                    // LFO for variation
+                    const lfo = ctx.createOscillator();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.02;
+
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.value = intensity * 0.02;
+
+                    const windGain = ctx.createGain();
+                    windGain.gain.value = intensity * baseVolume;
+
+                    windSource.connect(filter);
+                    filter.connect(windGain);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(windGain.gain);
+                    windGain.connect(masterGain);
+
+                    windSource.start();
+                    lfo.start();
+                    this.oscillators.push(lfo);
+                } catch (e) {
+                    console.warn('Wind creation failed:', e);
+                }
+            }
+
+            addBirdChirps(masterGain, intensity, voiceCount) {
+                for (let i = 0; i < voiceCount; i++) {
+                    const delay = Math.random() * 3000;
+                    const timeoutId = setTimeout(() => {
+                        this.scheduleBirdChirp(masterGain, intensity, i);
+                    }, delay);
+                    this.timeouts.push(timeoutId);
+                }
+            }
+
+            scheduleBirdChirp(masterGain, intensity, voiceIndex) {
+                if (!this.isPlaying) return;
+
+                const interval = 5000 + Math.random() * 8000;
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                const baseFreq = 800 + Math.random() * 400;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(baseFreq * 1.1, now);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.9, now + 0.2);
+                this.oscillators.push(osc);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(intensity * 0.06, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                this.gains.push(gain);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 0.2);
+
+                const nextId = setTimeout(() => {
+                    this.scheduleBirdChirp(masterGain, intensity, voiceIndex);
+                }, interval);
+                this.timeouts.push(nextId);
+            }
+
+            // ===== SYNTHETIC BEAUTY PROTOTYPES =====
+
+            addCrystallineResonance(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Beautiful harmonic series - like crystalline structures forming
+                // Use resonant frequencies that form a naturally beautiful chord
+                // Harmonic series based on 110 Hz (A2) - but more subtle
+                const baseFreq = 110;
+                const harmonics = [1, 2, 3, 4, 5, 6, 8, 10]; // Harmonic series (skip 7 for purity)
+
+                for (const harmonic of harmonics) {
+                    const freq = baseFreq * harmonic;
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Each harmonic has a slow, independent LFO for organic movement
+                    const lfo = ctx.createOscillator();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.15 + Math.random() * 0.1; // Slower movement
+
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.value = freq * 0.015; // REDUCED modulation depth
+
+                    // Higher harmonics fade out faster (like light filtering through crystal)
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * (1 - (harmonic / 12)) * 0.12; // REDUCED overall volume by half
+
+                    osc.connect(gain);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    lfo.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(lfo);
+                }
+            }
+
+            addBreathingPulses(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Warm, living pulses - like the OS breathing and inviting you in
+                const baseFreq = 85;
+                const harmonics = [1, 1.5, 2, 3];
+
+                for (const harmonic of harmonics) {
+                    const freq = baseFreq * harmonic;
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Main breathing pulse - unpredictable timing, much slower
+                    const breathLfo = ctx.createOscillator();
+                    breathLfo.type = 'sine';
+                    // Variable breathing rate - much slower (0.15-0.3 Hz)
+                    breathLfo.frequency.value = 0.15 + Math.random() * 0.15;
+
+                    const breathGain = ctx.createGain();
+                    breathGain.gain.value = intensity * 0.5; // Slightly less intense modulation
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * 0.2 / harmonics.length;
+
+                    // Add subtle micro-variations to each harmonic's breathing
+                    const microFlutter = ctx.createOscillator();
+                    microFlutter.type = 'sine';
+                    microFlutter.frequency.value = 2 + Math.random() * 2; // 2-4 Hz flutter
+
+                    const microGain = ctx.createGain();
+                    microGain.gain.value = intensity * 0.05; // Subtle flutter
+
+                    osc.connect(gain);
+                    breathLfo.connect(breathGain);
+                    breathGain.connect(gain.gain);
+                    microFlutter.connect(microGain);
+                    microGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    breathLfo.start();
+                    microFlutter.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(breathLfo);
+                    this.oscillators.push(microFlutter);
+                }
+            }
+
+            addLuminousWash(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Ethereal, shimmering - like light passing through water (more refined)
+                // Use fewer, more spaced out frequencies for elegance
+                const baseFreq = 220;
+                const frequencies = [
+                    baseFreq * 0.5,
+                    baseFreq * 1.1,
+                    baseFreq * 2.1,
+                    baseFreq * 3.2
+                ];
+
+                for (let i = 0; i < frequencies.length; i++) {
+                    const freq = frequencies[i];
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Slower, more subtle shimmering
+                    const shimmer = ctx.createOscillator();
+                    shimmer.type = 'sine';
+                    shimmer.frequency.value = 0.8 + i * 0.3; // Much slower shimmer rates
+
+                    const shimmerGain = ctx.createGain();
+                    shimmerGain.gain.value = intensity * 0.1; // MUCH more subtle modulation
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * 0.08 / frequencies.length; // REDUCED volume
+
+                    osc.connect(gain);
+                    shimmer.connect(shimmerGain);
+                    shimmerGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    shimmer.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(shimmer);
+                }
+            }
+
+            addOrganicHum(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Deep, warm foundation - the "OS breathing" underneath everything
+                // Very low, almost subharmonic presence
+                const baseFreqs = [45, 67, 90]; // Very low foundation
+
+                for (const freq of baseFreqs) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Very slow, organic movement
+                    const drift = ctx.createOscillator();
+                    drift.type = 'sine';
+                    drift.frequency.value = 0.2; // Slow drift
+
+                    const driftGain = ctx.createGain();
+                    driftGain.gain.value = freq * 0.15; // Noticeable frequency drift
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * 0.35 / baseFreqs.length;
+
+                    osc.connect(gain);
+                    drift.connect(driftGain);
+                    driftGain.connect(osc.frequency);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    drift.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(drift);
+                }
+
+                // Occasional harmonic overtones that rise and fall
+                this.scheduleOrganicTones(masterGain, intensity);
+            }
+
+            scheduleOrganicTones(masterGain, intensity) {
+                if (!this.isPlaying) return;
+
+                const interval = 3000 + Math.random() * 5000;
+                const timeoutId = setTimeout(() => {
+                    if (this.isPlaying && Math.random() < 0.6) {
+                        this.playOrganicTone(masterGain, intensity);
+                    }
+                    this.scheduleOrganicTones(masterGain, intensity);
+                }, interval);
+                this.timeouts.push(timeoutId);
+            }
+
+            playOrganicTone(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+                const duration = 1 + Math.random() * 2;
+
+                // Random harmonic overtone
+                const freq = 200 + Math.random() * 400;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(intensity * 0.1, now + 0.3);
+                gain.gain.linearRampToValueAtTime(intensity * 0.1, now + duration - 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + duration);
+                this.oscillators.push(osc);
+            }
+
+            // ===== EAR CANDY PROTOTYPES =====
+
+            addPulsingWaves(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Warm, rounded wave pulses - like a cool synth patch discovery
+                // Use lower, rounder oscillators that pulse together
+                const baseFreqs = [60, 90, 135]; // Warm low frequencies
+
+                for (const baseFreq of baseFreqs) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = baseFreq;
+
+                    // Unified pulse that affects all frequencies
+                    const pulseLfo = ctx.createOscillator();
+                    pulseLfo.type = 'sine';
+                    pulseLfo.frequency.value = 0.4 + Math.random() * 0.2; // 0.4-0.6 Hz pulse
+
+                    const pulseGain = ctx.createGain();
+                    pulseGain.gain.value = intensity * 0.6; // Noticeable pulse
+
+                    // Gentle wobble on top of the pulse
+                    const wobble = ctx.createOscillator();
+                    wobble.type = 'sine';
+                    wobble.frequency.value = 0.8 + Math.random() * 0.4; // Slow wobble
+
+                    const wobbleGain = ctx.createGain();
+                    wobbleGain.gain.value = intensity * 0.3;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * 0.18 / baseFreqs.length;
+
+                    osc.connect(gain);
+                    pulseLfo.connect(pulseGain);
+                    pulseGain.connect(gain.gain);
+                    wobble.connect(wobbleGain);
+                    wobbleGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    pulseLfo.start();
+                    wobble.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(pulseLfo);
+                    this.oscillators.push(wobble);
+                }
+            }
+
+            addMorphingHum(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Hypnotic, organic - frequencies that shift and dance
+                // Build a richer harmonic structure with slow morphing
+                const baseFreq = 110;
+                const harmonics = [1, 2, 3, 4, 5];
+
+                for (const harmonic of harmonics) {
+                    const freq = baseFreq * harmonic;
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Slow, wandering LFO for each harmonic - slightly different rates
+                    const drift = ctx.createOscillator();
+                    drift.type = 'sine';
+                    drift.frequency.value = 0.05 + Math.random() * 0.08; // Very slow drift (0.05-0.13 Hz)
+
+                    const driftGain = ctx.createGain();
+                    driftGain.gain.value = freq * 0.08; // Gentle frequency wandering
+
+                    // Occasional gentle swell - happens at different times per harmonic
+                    const swell = ctx.createOscillator();
+                    swell.type = 'sine';
+                    swell.frequency.value = 0.15 + Math.random() * 0.1; // Much slower than drift
+
+                    const swellGain = ctx.createGain();
+                    swellGain.gain.value = intensity * (0.4 - harmonic * 0.06); // Higher harmonics swell less
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * (1 - harmonic * 0.12) * 0.14;
+
+                    osc.connect(gain);
+                    drift.connect(driftGain);
+                    driftGain.connect(osc.frequency);
+                    swell.connect(swellGain);
+                    swellGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    drift.start();
+                    swell.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(drift);
+                    this.oscillators.push(swell);
+                }
+            }
+
+            addStreamingWater(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                try {
+                    // Flowing water uses layered sine waves with LFO to create organic movement
+                    // Rather than noise, use multiple frequency bands
+
+                    // Low rumble - water body resonance
+                    const lowFreqs = [60, 85, 120];
+                    for (const freq of lowFreqs) {
+                        const osc = ctx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+
+                        // Slow, gentle LFO
+                        const lfo = ctx.createOscillator();
+                        lfo.type = 'sine';
+                        lfo.frequency.value = 0.5 + Math.random() * 0.3;
+
+                        const lfoGain = ctx.createGain();
+                        lfoGain.gain.value = freq * 0.08; // Frequency modulation
+
+                        const gain = ctx.createGain();
+                        gain.gain.value = (intensity * baseVolume * 0.3) / lowFreqs.length;
+
+                        osc.connect(gain);
+                        lfo.connect(lfoGain);
+                        lfoGain.connect(osc.frequency);
+                        gain.connect(masterGain);
+
+                        osc.start();
+                        lfo.start();
+                        this.oscillators.push(osc);
+                        this.oscillators.push(lfo);
+                    }
+
+                    // Mid-range shimmer - water surface movement
+                    const midFreqs = [400, 550, 750];
+                    for (const freq of midFreqs) {
+                        const osc = ctx.createOscillator();
+                        osc.type = 'triangle'; // Triangle for softer harmonics
+                        osc.frequency.value = freq;
+
+                        const gain = ctx.createGain();
+                        gain.gain.value = (intensity * baseVolume * 0.2) / midFreqs.length;
+
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+
+                        osc.start();
+                        this.oscillators.push(osc);
+                    }
+
+                    // Occasional "pluck" events - water bubbles/drips
+                    this.scheduleWaterDrops(masterGain, intensity * baseVolume * 0.15);
+
+                } catch (e) {
+                    console.warn('Water element creation failed:', e);
+                }
+            }
+
+            scheduleWaterDrops(masterGain, volume) {
+                if (!this.isPlaying) return;
+
+                const interval = 1000 + Math.random() * 3000; // Every 1-4 seconds
+                const timeoutId = setTimeout(() => {
+                    if (this.isPlaying && Math.random() < 0.7) {
+                        this.playWaterDrop(masterGain, volume);
+                    }
+                    this.scheduleWaterDrops(masterGain, volume);
+                }, interval);
+                this.timeouts.push(timeoutId);
+            }
+
+            playWaterDrop(masterGain, volume) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                // "Pluck" sound - frequency sweep down
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800 + Math.random() * 400, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+                this.oscillators.push(osc);
+            }
+
+            addOrganicPad(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Warm, organic pad with very gentle modulation
+                const frequencies = [82, 110, 165]; // Musical notes: E2, A2, E3
+
+                for (const freq of frequencies) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Very slow LFO for organic feel
+                    const lfo = ctx.createOscillator();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.05 + Math.random() * 0.05;
+
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.value = intensity * baseVolume * 0.08;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume / frequencies.length;
+
+                    osc.connect(gain);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    lfo.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(lfo);
+                    this.gains.push(gain);
+                }
+            }
+
+            addLeafRustle(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Leaf rustle is synthetic but organic - use percussive bursts
+                // Each "rustle event" is a short burst of mid-high frequencies
+                this.scheduleLeafRustles(masterGain, intensity * baseVolume);
+            }
+
+            scheduleLeafRustles(masterGain, volume) {
+                if (!this.isPlaying) return;
+
+                // Random timing between rustles - sometimes quick succession, sometimes quiet
+                const interval = 800 + Math.random() * 4000;
+                const timeoutId = setTimeout(() => {
+                    if (this.isPlaying && Math.random() < 0.65) {
+                        this.playLeafRustle(masterGain, volume);
+                    }
+                    this.scheduleLeafRustles(masterGain, volume);
+                }, interval);
+                this.timeouts.push(timeoutId);
+            }
+
+            playLeafRustle(masterGain, volume) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+                const duration = 0.15 + Math.random() * 0.15; // 150-300ms rustles
+
+                // Create a short burst of high-frequency content
+                // Multiple overlapping frequencies for texture
+                const frequencies = [
+                    2000 + Math.random() * 500,
+                    2800 + Math.random() * 600,
+                    3600 + Math.random() * 400
+                ];
+
+                for (let i = 0; i < frequencies.length; i++) {
+                    const freq = frequencies[i];
+                    const osc = ctx.createOscillator();
+                    osc.type = 'triangle'; // Triangle has natural crispness
+                    osc.frequency.value = freq;
+
+                    // Each frequency has slightly different amplitude envelope
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(volume * (0.8 - i * 0.2), now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                    this.oscillators.push(osc);
+                }
+            }
+
+            addWarmDrone(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Warm, slightly musical drone
+                const frequencies = [55, 82]; // Low, warm foundation
+
+                for (const freq of frequencies) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume / frequencies.length;
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    this.oscillators.push(osc);
+                    this.gains.push(gain);
+                }
+            }
+
+            addCricketSounds(masterGain, intensity, baseVolume) {
+                // Schedule occasional cricket chirps
+                const scheduleNextCricket = () => {
+                    if (!this.isPlaying) return;
+
+                    const interval = 5000 + Math.random() * 10000;
+                    const timeoutId = setTimeout(() => {
+                        if (this.isPlaying && Math.random() < 0.6) {
+                            this.playCricketChirp(masterGain, intensity * baseVolume);
+                        }
+                        scheduleNextCricket();
+                    }, interval);
+                    this.timeouts.push(timeoutId);
+                };
+
+                scheduleNextCricket();
+            }
+
+            playCricketChirp(masterGain, volume) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                // Crickets chirp around 4-5 kHz
+                const frequency = 4000 + Math.random() * 1000;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = frequency;
+
+                // Amplitude modulation for chirping effect
+                const chirpRate = 15 + Math.random() * 5; // Hz
+                const modulator = ctx.createOscillator();
+                modulator.type = 'sine';
+                modulator.frequency.value = chirpRate;
+
+                const modulatorGain = ctx.createGain();
+                modulatorGain.gain.value = 0.7;
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(volume, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+                osc.connect(gain);
+                modulator.connect(modulatorGain);
+                modulatorGain.connect(gain.gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                modulator.start(now);
+                osc.stop(now + 0.4);
+                modulator.stop(now + 0.4);
+
+                this.oscillators.push(osc);
+                this.oscillators.push(modulator);
+            }
+
+            addBeeBuzz(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+
+                // Real bee buzz is higher frequency (400-600 Hz fundamentals with wing beat modulation)
+                const baseFreq = 500; // Higher frequency = buzzy
+
+                // Main tone
+                const mainOsc = ctx.createOscillator();
+                mainOsc.type = 'sine';
+                mainOsc.frequency.value = baseFreq;
+
+                // Wing beat modulation - fast amplitude modulation at 200-240 Hz
+                // This is what makes it sound like a buzz, not a pure tone
+                const wingModulator = ctx.createOscillator();
+                wingModulator.type = 'sine';
+                wingModulator.frequency.value = 220; // Wing beat frequency
+
+                const wingModGain = ctx.createGain();
+                wingModGain.gain.value = 0.65; // About 65% modulation depth for recognizable buzz
+
+                // Main amplitude envelope
+                const mainGain = ctx.createGain();
+                mainGain.gain.value = intensity * 0.3;
+
+                // Very slight pitch variation (vibrato) - slow, organic
+                const vibrato = ctx.createOscillator();
+                vibrato.type = 'sine';
+                vibrato.frequency.value = 5; // Slow vibrato
+
+                const vibratoGain = ctx.createGain();
+                vibratoGain.gain.value = baseFreq * 0.04; // ±4% pitch wobble
+
+                // Connect: wing beat modulates the amplitude
+                wingModulator.connect(wingModGain);
+                wingModGain.connect(mainGain.gain);
+
+                // Main oscillator to output
+                mainOsc.connect(mainGain);
+                mainGain.connect(masterGain);
+
+                // Vibrato modulates pitch slightly
+                vibrato.connect(vibratoGain);
+                vibratoGain.connect(mainOsc.frequency);
+
+                // Start oscillators
+                mainOsc.start();
+                wingModulator.start();
+                vibrato.start();
+
+                this.oscillators.push(mainOsc);
+                this.oscillators.push(wingModulator);
+                this.oscillators.push(vibrato);
+                this.gains.push(mainGain);
+                this.gains.push(wingModGain);
+            }
+
+            addWarmResonance(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Resonant harmonic pad - musical but organic
+                const frequencies = [110, 165, 220]; // A2, E3, A3
+
+                for (let i = 0; i < frequencies.length; i++) {
+                    const freq = frequencies[i];
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Unique LFO for each note
+                    const lfo = ctx.createOscillator();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.1 + i * 0.02;
+
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.value = intensity * baseVolume * 0.12;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume / frequencies.length;
+
+                    osc.connect(gain);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    lfo.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(lfo);
+                    this.gains.push(gain);
+                }
+            }
+
+            addSubtleGrowthPulses(masterGain, intensity) {
+                const scheduleNextPulse = () => {
+                    if (!this.isPlaying) return;
+
+                    const interval = 8000 + Math.random() * 8000;
+                    const timeoutId = setTimeout(() => {
+                        if (this.isPlaying && Math.random() < 0.4) {
+                            this.playSubtleGrowthPulse(masterGain, intensity);
+                        }
+                        scheduleNextPulse();
+                    }, interval);
+                    this.timeouts.push(timeoutId);
+                };
+
+                scheduleNextPulse();
+            }
+
+            playSubtleGrowthPulse(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(80, now);
+                osc.frequency.exponentialRampToValueAtTime(120, now + 0.6);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(intensity * 0.03, now + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 0.6);
+                this.oscillators.push(osc);
+            }
+
+            addFieldNoise(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                try {
+                    const bufferSize = ctx.sampleRate * 12;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    // Field recording simulation - low amplitude noise
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * 0.2;
+                    }
+
+                    const fieldSource = ctx.createBufferSource();
+                    fieldSource.buffer = buffer;
+                    fieldSource.loop = true;
+                    this.bufferSources.push(fieldSource);
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 1500;
+                    filter.Q.value = 0.5;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume;
+
+                    fieldSource.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+
+                    fieldSource.start();
+                } catch (e) {
+                    console.warn('Field noise creation failed:', e);
+                }
+            }
+
+            addAmbientDrone(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 55; // Low drone
+
+                const gain = ctx.createGain();
+                gain.gain.value = intensity * baseVolume;
+
+                // Add slow modulation
+                const lfo = ctx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.1;
+
+                const lfoGain = ctx.createGain();
+                lfoGain.gain.value = intensity * baseVolume * 0.1;
+
+                osc.connect(gain);
+                lfo.connect(lfoGain);
+                lfoGain.connect(gain.gain);
+                gain.connect(masterGain);
+
+                osc.start();
+                lfo.start();
+                this.oscillators.push(osc);
+                this.oscillators.push(lfo);
+                this.gains.push(gain);
+            }
+
+            addOccasionalSounds(masterGain, intensity) {
+                const interval = 8000 + Math.random() * 12000;
+                const timeoutId = setTimeout(() => {
+                    if (this.isPlaying && Math.random() < 0.4) {
+                        this.playOccasionalSound(masterGain, intensity);
+                    }
+                    this.addOccasionalSounds(masterGain, intensity);
+                }, interval);
+                this.timeouts.push(timeoutId);
+            }
+
+            playOccasionalSound(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                const baseFreq = 600 + Math.random() * 300;
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.3);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(intensity * 0.04, now + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+                this.oscillators.push(osc);
+            }
+
+            addEquipmentHum(masterGain, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 60;
+
+                const gain = ctx.createGain();
+                gain.gain.value = baseVolume;
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start();
+                this.oscillators.push(osc);
+                this.gains.push(gain);
+            }
+
+            addNaturalTextures(masterGain, intensity, baseVolume) {
+                // Combination of wind and organic noise
+                this.addWindWithVariation(masterGain, intensity, baseVolume * 0.6, 700);
+
+                // Add subtle filtered noise for texture
+                const ctx = audioContextManager.getContext();
+                try {
+                    const bufferSize = ctx.sampleRate * 10;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * 0.25;
+                    }
+
+                    const textureSource = ctx.createBufferSource();
+                    textureSource.buffer = buffer;
+                    textureSource.loop = true;
+                    this.bufferSources.push(textureSource);
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 2000;
+                    filter.Q.value = 1;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume * 0.4;
+
+                    textureSource.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+
+                    textureSource.start();
+                } catch (e) {
+                    console.warn('Natural textures creation failed:', e);
+                }
+            }
+
+            addPulsingElement(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Heartbeat/breathing effect
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 80;
+
+                const envLfo = ctx.createOscillator();
+                envLfo.type = 'sine';
+                envLfo.frequency.value = 0.8; // 1.25 second cycle
+
+                const envGain = ctx.createGain();
+                envGain.gain.value = intensity * baseVolume * 0.5;
+
+                const gain = ctx.createGain();
+                gain.gain.value = intensity * baseVolume;
+
+                osc.connect(gain);
+                envLfo.connect(envGain);
+                envGain.connect(gain.gain);
+                gain.connect(masterGain);
+
+                osc.start();
+                envLfo.start();
+                this.oscillators.push(osc);
+                this.oscillators.push(envLfo);
+                this.gains.push(gain);
+            }
+
+            addNaturalInstruments(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Simulate flute/strings - warm mid-range tones
+                const frequencies = [220, 330, 440]; // A3, E4, A4
+
+                for (let i = 0; i < frequencies.length; i++) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = frequencies[i];
+
+                    // Slight tremolo for organic feel
+                    const tremolo = ctx.createOscillator();
+                    tremolo.type = 'sine';
+                    tremolo.frequency.value = 4 + i; // Different modulation for each
+
+                    const tremoloGain = ctx.createGain();
+                    tremoloGain.gain.value = intensity * baseVolume * 0.1;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume / frequencies.length;
+
+                    osc.connect(gain);
+                    tremolo.connect(tremoloGain);
+                    tremoloGain.connect(gain.gain);
+                    gain.connect(masterGain);
+
+                    osc.start();
+                    tremolo.start();
+                    this.oscillators.push(osc);
+                    this.oscillators.push(tremolo);
+                    this.gains.push(gain);
+                }
+            }
+
+            addGrowthSounds(masterGain, intensity) {
+                const interval = 10000 + Math.random() * 8000;
+                const timeoutId = setTimeout(() => {
+                    if (this.isPlaying && Math.random() < 0.5) {
+                        this.playGrowthSound(masterGain, intensity);
+                    }
+                    this.addGrowthSounds(masterGain, intensity);
+                }, interval);
+                this.timeouts.push(timeoutId);
+            }
+
+            playGrowthSound(masterGain, intensity) {
+                const ctx = audioContextManager.getContext();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.8);
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 300;
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(intensity * 0.04, now + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 0.8);
+                this.oscillators.push(osc);
+            }
+
+            addForestCanopy(masterGain, intensity, baseVolume) {
+                // Multiple layers of wind and rustling
+                this.addWindWithVariation(masterGain, intensity, baseVolume * 0.5, 800);
+                this.addWindWithVariation(masterGain, intensity * 0.7, baseVolume * 0.3, 1200);
+            }
+
+            addDeepAmbience(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                // Very low drone for depth
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 40;
+
+                const gain = ctx.createGain();
+                gain.gain.value = intensity * baseVolume;
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start();
+                this.oscillators.push(osc);
+                this.gains.push(gain);
+            }
+
+            addLayeredBirds(masterGain, intensity) {
+                // Multiple bird patterns at different frequencies
+                this.addBirdChirps(masterGain, intensity * 0.6, 2);
+                setTimeout(() => {
+                    this.addBirdChirps(masterGain, intensity * 0.7, 3);
+                }, 1000);
+            }
+
+            addInsectAmbience(masterGain, intensity, baseVolume) {
+                const ctx = audioContextManager.getContext();
+
+                try {
+                    const bufferSize = ctx.sampleRate * 8;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    // Higher frequency noise for insect sounds
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * 0.15;
+                    }
+
+                    const insectSource = ctx.createBufferSource();
+                    insectSource.buffer = buffer;
+                    insectSource.loop = true;
+                    this.bufferSources.push(insectSource);
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 4000;
+                    filter.Q.value = 2;
+
+                    const gain = ctx.createGain();
+                    gain.gain.value = intensity * baseVolume;
+
+                    insectSource.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+
+                    insectSource.start();
+                } catch (e) {
+                    console.warn('Insect ambience creation failed:', e);
+                }
+            }
+        }
+
+        // UI Setup
+        const prototypes = {
+            'birds': new AudioPrototype('Bird Chirps', 'birds'),
+            'crystalline': new AudioPrototype('Crystalline Resonance', 'crystalline'),
+            'breathing': new AudioPrototype('Breathing Pulses', 'breathing'),
+            'luminous': new AudioPrototype('Luminous Wash', 'luminous'),
+            'pulsing-waves': new AudioPrototype('Pulsing Waves', 'pulsing-waves'),
+            'morphing-hum': new AudioPrototype('Morphing Hum', 'morphing-hum')
+        };
+
+        let currentPrototype = null;
+
+        // Initialize buttons after DOM is ready
+        setTimeout(() => {
+            document.querySelectorAll('.prototype').forEach(el => {
+                const prototypeType = el.dataset.prototype;
+                const button = el.querySelector('button');
+
+                if (!button) {
+                    console.error('Button not found for prototype:', prototypeType);
+                    return;
+                }
+
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    if (currentPrototype && currentPrototype.type === prototypeType && currentPrototype.isPlaying) {
+                        currentPrototype.stop();
+                        currentPrototype = null;
+                        document.querySelectorAll('.prototype').forEach(p => p.classList.remove('active'));
+                    } else {
+                        if (currentPrototype) {
+                            currentPrototype.stop();
+                        }
+
+                        currentPrototype = prototypes[prototypeType];
+
+                        document.querySelectorAll('.prototype').forEach(p => p.classList.remove('active'));
+                        el.classList.add('active');
+
+                        console.log('Playing:', prototypeType);
+                        await currentPrototype.play(0);
+                    }
+                    updateButtonStates();
+                });
+            });
+        }, 0);
+
+
+        function updateButtonStates() {
+            const buttonTexts = {
+                'birds': 'Play Birds',
+                'crystalline': 'Play Crystalline',
+                'breathing': 'Play Breathing',
+                'luminous': 'Play Luminous',
+                'pulsing-waves': 'Play Pulsing Waves',
+                'morphing-hum': 'Play Morphing Hum'
+            };
+
+            document.querySelectorAll('.prototype button').forEach(button => {
+                const prototype = button.closest('.prototype').dataset.prototype;
+                if (currentPrototype && currentPrototype.type === prototype && currentPrototype.isPlaying) {
+                    button.classList.add('playing');
+                    button.textContent = 'Stop ' + buttonTexts[prototype].replace('Play ', '');
+                } else {
+                    button.classList.remove('playing');
+                    button.textContent = buttonTexts[prototype];
+                }
+            });
+        }
+
+        // Resume audio context on first interaction
+        document.addEventListener('click', () => {
+            audioContextManager.resume();
+        }, { once: true });
+    </script>
+</body>
+</html>
