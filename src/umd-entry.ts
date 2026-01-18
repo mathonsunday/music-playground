@@ -14,14 +14,6 @@ import {
   CoreSoundEffect,
   Ambience,
   SoundEffect,
-  Synth,
-  PhysicalModel,
-  DrumSynth,
-  Sampler,
-  INSTRUMENTS,
-  EffectsChain,
-  Reverb,
-  Delay,
   registerTheme,
   getTheme,
   getThemeNames,
@@ -40,25 +32,13 @@ if (typeof window !== 'undefined') {
     CoreSoundEffect,
     Ambience, // Backward compat (DeepSeaAmbience)
     SoundEffect, // Backward compat (DeepSeaSoundEffect)
-    
-    // Sound engines
-    Synth,
-    PhysicalModel,
-    DrumSynth,
-    Sampler,
-    INSTRUMENTS,
-    
-    // Effects
-    EffectsChain,
-    Reverb,
-    Delay,
-    
+
     // Theme system
     registerTheme,
     getTheme,
     getThemeNames,
     themes,
-    
+
     // Theme classes (direct access)
     DeepSeaAmbience,
     DeepSeaSoundEffect,

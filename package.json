@@ -1,6 +1,6 @@
 {
   "name": "music-playground",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "A Web Audio API library for generating atmospheric soundscapes programmatically. Perfect for adding ambient audio to themed web projects, games, or interactive experiences.",
   "keywords": [
     "web-audio",
@@ -46,8 +46,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "test:ci": "vitest run --reporter=verbose --coverage",
-    "prepare": "husky install"
+    "test:ci": "vitest run --reporter=verbose --coverage"
   },
   "devDependencies": {
     "@types/jsdom": "^27.0.0",

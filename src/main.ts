@@ -4,11 +4,10 @@
  * This is just a demo page. The actual library is exported from index.ts
  */
 import './style.css';
-import { Ambience } from './ambience/ambience';
-import { SoundEffect } from './ambience/sound-effects';
+import { themes } from './themes/index';
 
-const ambience = new Ambience();
-const sfx = new SoundEffect();
+const ambience = new themes.deepSea.Ambience();
+const sfx = new themes.deepSea.SoundEffect();
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 

@@ -27,15 +27,8 @@
 export { Ambience as CoreAmbience, type AmbienceOptions, type ActiveLayer, type PresetHandler } from './core/ambience.js';
 export { SoundEffect as CoreSoundEffect, type SoundEffectHandler } from './core/sound-effect.js';
 
-// Sound engines (generic)
-export { Synth } from './sound-engines/synth.js';
-export { PhysicalModel, DrumSynth } from './sound-engines/physical.js';
-export { Sampler, INSTRUMENTS } from './sound-engines/sampler.js';
-
-// Effects (generic)
-export { EffectsChain } from './effects/effects-chain.js';
-export { Reverb } from './effects/reverb.js';
-export { Delay } from './effects/delay.js';
+// Sound engines and effects are internal implementation details
+// They are not exported as public API to keep the API surface clean
 
 // ============================================
 // THEME SYSTEM
